@@ -33,7 +33,7 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
     return QRView(
         key: qrKey,
         onQRViewCreated: _onQRViewCreated,
-        overlay: QrScannerOverlayShape(borderColor: Colors.white,borderRadius: 10,borderLength: 30,borderWidth: 5,cutOutSize: 250),
+        overlay: QrScannerOverlayShape(borderColor: Colors.white,borderRadius: 10,borderLength: 30,borderWidth: 5,cutOutSize: 250,),
     );
   }
   void _onQRViewCreated(QRViewController controller){
@@ -48,7 +48,7 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
 
         // navigate after frame render
         if (!mounted) return;
-        await Navigator.push(context, MaterialPageRoute(builder: (_) => ResultPage(qrResult: result)),);
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => ResultPage(result: result)),);
 
         // resume camera after coming back
         await qrViewController?.resumeCamera();
@@ -68,7 +68,7 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
     try {
       final result = await FlutterDocScanner().getScannedDocumentAsPdf(page: 4);
       if (result != null && mounted) {
-        await Navigator.push(context, MaterialPageRoute(builder: (_) => ResultPage(qrResult: result.toString())),);
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => ResultPage(result: result.toString())),);
       }
     } catch (e) {
       debugPrint("Error scanning: $e");
@@ -93,14 +93,12 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
         children: [
           
           /// >>> Camera View QR/Document
-          Positioned.fill(
-              child: _selectedIndex == 0 ? _buildQrView(context) : const Center(child: Text("Document Scanner Ready\nClick Again", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),)
-          ),
+          Positioned.fill( child: _selectedIndex == 0 ? _buildQrView(context) : const Center(child: Text("Document Scanner Ready\nClick Again", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),) ),
 
           
           /// >>> Bottom Navigation Tab
           Positioned(
-              bottom: 60,
+              bottom: 70,
               child: Row(
                 children: [
                   _buildBottomTab("QR Code", 0, Icons.qr_code),
