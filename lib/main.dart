@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:scanner_application/pages/home_page.dart';
+import 'package:scanner_application/pages/scanner_home_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         drawerTheme: DrawerThemeData(backgroundColor: Colors.black26,surfaceTintColor: Colors.white),
         buttonTheme: ButtonThemeData(buttonColor: Colors.pink, textTheme:ButtonTextTheme.normal,hoverColor: Colors.blue),
       ),
-      home: HomePage()
+      home: ScannerHomePage()
     );
   }
 }
