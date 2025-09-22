@@ -1,16 +1,34 @@
-# scanner_application
+# Scanner Application
 
-Scanner Application
+A professional Scanner Application built with Flutter. Scan documents, images, and QR codes easily from your device or gallery. The app is lightweight, fast, and user-friendly.
 
-## Getting Started
+[Download the App](https://github.com/prothesbarai/scanner_application/tree/main/assets/apk_file)
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Scan documents directly from your camera
+- Import images from gallery to scan
+- Fast and accurate scanning
+- Export scans as PDF or image
+- User-friendly interface
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="./assets/images/img1.png" width="30%" />
+  <img src="./assets/images/img2.png" width="30%" />
+  <img src="./assets/images/img3.png" width="30%" />
+</p>
+
+---
+
+## Installation
+
+1. Clone the repository:
+```bash
+  git clone https://github.com/prothesbarai/scanner_application.git
+```
