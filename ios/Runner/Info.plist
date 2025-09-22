@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+
+
+	<!-- Get Scanner Permission -->
+    <key>NSCameraUsageDescription</key>
+    <string>এই অ্যাপ ক্যামেরা ব্যবহার করে ডকুমেন্ট স্ক্যান করবে।</string>
+    <!-- Get Gallery Permission -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>গ্যালারি থেকে ছবি নেওয়ার জন্য অনুমতি দিন।</string>
+
+
 </dict>
 </plist>
