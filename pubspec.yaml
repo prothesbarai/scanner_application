@@ -37,6 +37,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   image_picker: ^1.2.0
   flutter_doc_scanner: ^0.0.16
+  qr_code_scanner_plus: ^2.0.12
 
 dev_dependencies:
   flutter_test:
