@@ -3,6 +3,10 @@ import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:scanner_application/pages/result_page.dart';
 
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart';
 
 class ScannerHomePage extends StatefulWidget {
   const ScannerHomePage({super.key});
@@ -61,7 +65,8 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
 
 
   /// >>> ========= Document Scanner Start Here ============
-  Future<void> _scanDocument() async {
+  // No Saved Internal Directory
+  /*Future<void> _scanDocument() async {
     if (_isNavigating) return;
 
     _isNavigating = true;
@@ -74,6 +79,80 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
       debugPrint("Error scanning: $e");
     } finally {
       _isNavigating = false;
+    }
+  }*/
+  // Saved Internal Directory
+  Future<void> _scanDocument(BuildContext context) async {
+    try {
+      // Scan document
+      final result = await FlutterDocScanner().getScannedDocumentAsPdf(page: 4000);
+
+      if (result == null) return;
+
+      // Convert result to Uint8List safely
+      Uint8List pdfBytes;
+
+      if (result is Uint8List) {
+        pdfBytes = result;
+      } else if (result is Map) {
+        final pdfUri = result['pdfUri'] as String?;
+        if (pdfUri == null) throw Exception("pdfUri not found in scanner result");
+        final path = pdfUri.replaceFirst('file://', '');
+        final file = File(path);
+        if (!file.existsSync()) throw Exception("PDF file not found at $path");
+        pdfBytes = await file.readAsBytes();
+      } else if (result is String) {
+        final file = File(result);
+        if (!file.existsSync()) throw Exception("Scanned PDF file not found at path: $result");
+        pdfBytes = await file.readAsBytes();
+      } else {
+        throw Exception("Unknown PDF format from scanner: $result");
+      }
+
+      // Show confirmation dialog
+      if (context.mounted) {
+        final shouldSave = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Save Document"),
+            content: const Text("Do you want to save this scanned document?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Save"),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldSave != true) return;
+      }
+
+
+
+
+      // Save to Downloads folder
+      Directory saveDir;
+      if (Platform.isAndroid && !kIsWeb) {
+        saveDir = Directory('/storage/emulated/0/Download');
+        if (!saveDir.existsSync()) saveDir.createSync(recursive: true);
+      } else {
+        // iOS or other platforms: app documents folder
+        saveDir = await getApplicationDocumentsDirectory();
+      }
+
+      final fileName = 'prothes_scanned_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final filePath = '${saveDir.path}/$fileName';
+      await File(filePath).writeAsBytes(pdfBytes);
+
+      // Show Toast
+      Fluttertoast.showToast(msg: "PDF saved at: $filePath", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM,);
+    } catch (e) {
+      debugPrint("Error scanning: $e");
     }
   }
   /// <<< ========= Document Scanner End Here ==============
@@ -124,7 +203,7 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
     return GestureDetector(
       onTap: (){
         setState(() {_selectedIndex = index;});
-        if(index == 1){_scanDocument();}
+        if(index == 1){_scanDocument(context);}
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
