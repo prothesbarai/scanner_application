@@ -13,15 +13,34 @@ A professional Scanner Application built with Flutter. Scan documents, images, a
 - Fast and accurate scanning
 - Export scans as PDF or image
 - User-friendly interface
+- Add ProGuard for Android : android/app/proguard-rules.pro
+- Add buildTypes for Android :
+```kotlin
+buildTypes {
+    getByName("release") {
+        // Release build এ ProGuard enable করা হলো
+        isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro"
+        )
+
+        // আপাতত debug keys use হবে (নিজের keystore দিলে এখানে বসাতে হবে)
+        signingConfig = signingConfigs.getByName("debug")
+    }
+}
+```
 
 ---
 
 ## Screenshots
 
 <p align="center">
-  <img src="./assets/images/img1.png" width="30%" />
-  <img src="./assets/images/img2.png" width="30%" />
-  <img src="./assets/images/img3.png" width="30%" />
+  <img src="./assets/images/img1.png" width="25%" />
+  <img src="./assets/images/img2.png" width="25%" />
+  <img src="./assets/images/img3.png" width="25%" />
+  <img src="./assets/images/img4.png" width="25%" />
 </p>
 
 ---
