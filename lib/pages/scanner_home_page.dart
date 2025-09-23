@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:scanner_application/pages/result_page.dart';
 
@@ -23,7 +26,7 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
   String? documentPath;
   bool _isNavigating = false;
 
-
+  String? extractedText;
 
   @override
   void dispose() {
@@ -159,6 +162,71 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
 
 
 
+  /// >>> ============ Image to Text with Camera/Gallery Dialog ============
+  Future<void> _extractTextFromImage() async {
+    try {
+      final source = await showDialog<ImageSource>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Select Image Source"),
+          actions: [
+            TextButton.icon(
+              onPressed: () => Navigator.pop(context, ImageSource.camera),
+              icon: const Icon(Icons.camera_alt),
+              label: const Text("Camera"),
+            ),
+            TextButton.icon(
+              onPressed: () => Navigator.pop(context, ImageSource.gallery),
+              icon: const Icon(Icons.photo_library),
+              label: const Text("Gallery"),
+            ),
+          ],
+        ),
+      );
+
+      if (source == null) return;
+
+      final picked = await ImagePicker().pickImage(source: source);
+      if (picked == null) return;
+
+      final inputImage = InputImage.fromFilePath(picked.path);
+      final textRecognizer = TextRecognizer();
+      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      await textRecognizer.close();
+
+      final extractedText = recognizedText.text;
+
+      if (!mounted) return;
+
+      // Show extracted text in dialog with copy option
+      await showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Extracted Text"),
+          content: SingleChildScrollView(child: Text(extractedText.isEmpty ? "No text found" : extractedText),),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (extractedText.isNotEmpty) {
+                  Clipboard.setData(ClipboardData(text: extractedText));
+                  Fluttertoast.showToast(msg: "Copied to Clipboard");
+                }
+                Navigator.pop(context);
+              },
+              child: const Text("Copy"),
+            ),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close"),),
+          ],
+        ),
+      );
+    } catch (e) {
+      debugPrint("Error extracting text: $e");
+      Fluttertoast.showToast(msg: "Failed to extract text");
+    }
+  }
+  /// <<< ============ End ============
+
+
 
 
   @override
@@ -172,7 +240,7 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
         children: [
           
           /// >>> Camera View QR/Document
-          Positioned.fill( child: _selectedIndex == 0 ? _buildQrView(context) : const Center(child: Text("Document Scanner Ready\nClick Again", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),) ),
+          Positioned.fill( child: _selectedIndex == 0 ? _buildQrView(context) : const Center(child: Text("Scanner Ready\nClick Again", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),) ),
 
           
           /// >>> Bottom Navigation Tab
@@ -183,6 +251,8 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
                   _buildBottomTab("QR Code", 0, Icons.qr_code),
                     const SizedBox(width: 40),
                   _buildBottomTab("Document", 1, Icons.description),
+                  const SizedBox(width: 40),
+                  _buildBottomTab("Image to Text", 2, Icons.text_snippet),
                 ],
               )
           ),
@@ -203,7 +273,8 @@ class _ScannerHomePageState extends State<ScannerHomePage> {
     return GestureDetector(
       onTap: (){
         setState(() {_selectedIndex = index;});
-        if(index == 1){_scanDocument(context);}
+        if(index == 1) {_scanDocument(context);}
+        else if (index == 2) {_extractTextFromImage();}
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
