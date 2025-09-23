@@ -12,6 +12,7 @@ A professional Scanner Application built with Flutter. Scan documents, images, a
 - Import images from gallery to scan
 - Fast and accurate scanning
 - Export scans as PDF or image
+- Extrct text from image
 - User-friendly interface
 - Add ProGuard for Android : android/app/proguard-rules.pro
 - Add buildTypes for Android :
